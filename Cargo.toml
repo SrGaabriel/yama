@@ -4,10 +4,20 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bootloader = "0.9"
+bootloader = "0.9.29"
+volatile = "0.6.1"
+spin = "0.9.8"
+buddy-alloc="0.6.0"
+
+[dependencies.lazy_static]
+version = "1.5.0"
+features = ["spin_no_std"]
 
 [profile.dev]
 panic = "abort"
 
 [profile.release]
 panic = "abort"
+
+[unstable]
+alloc = true
