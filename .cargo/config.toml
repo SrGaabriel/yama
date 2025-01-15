@@ -1,6 +1,7 @@
 [unstable]
-build-std = ["core", "compiler_builtins", "alloc"]
-build-std-features = ["compiler-builtins-mem"]
+# enable the unstable artifact-dependencies feature, see
+# https://doc.rust-lang.org/nightly/cargo/reference/unstable.html#artifact-dependencies
+bindeps = true
 
-[build]
-target = "x86_64-yama_os.json"
+[target.'cfg(target_arch = "x86_64")']
+linker = "rust-lld"

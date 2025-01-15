@@ -1,34 +1,17 @@
-#![no_std]
-#![no_main]
-
-extern crate alloc;
-
-use alloc::vec;
-use alloc::vec::Vec;
-use core::fmt::Write;
-
-mod panic;
-mod vga;
-mod gpu;
-mod mem;
-
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
-    print!("> ");
-
-    let texts = vec!["Hello", "World", "Yama", "OS"];
-    println!("{:?}", texts);
-
-    loop {}
-}
-
-#[macro_export]
-macro_rules! print {
-    ($($arg:tt)*) => ($crate::vga::_print(format_args!($($arg)*)));
-}
-
-#[macro_export]
-macro_rules! println {
-    () => ($crate::print!("\n"));
-    ($($arg:tt)*) => ($crate::print!("{}\n", format_args!($($arg)*)));
+fn main() {
+    let uefi = false;
+    let mut cmd = std::process::Command::new("C:/Program Files/qemu/qemu-system-x86_64");
+    cmd.arg("-machine").arg("accel=whpx,type=q35");
+    if uefi {
+        let uefi_path = env!("UEFI_PATH");
+        println!("Running UEFI at {}", uefi_path);
+        cmd.arg("-bios").arg(ovmf_prebuilt::ovmf_pure_efi());
+        cmd.arg("-drive").arg(format!("format=raw,file={uefi_path}"));
+        println!("QEMU: {:?}", cmd);
+    } else {
+        let bios_path = env!("BIOS_PATH");
+        cmd.arg("-drive").arg(format!("format=raw,file={bios_path}"));
+    }
+    let mut child = cmd.spawn().unwrap();
+    child.wait().unwrap();
 }
