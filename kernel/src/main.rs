@@ -8,33 +8,33 @@ use alloc::string::ToString;
 use core::arch::asm;
 use core::fmt::Write;
 use bootloader_api::{entry_point, BootInfo};
+use crate::gpu::scan::detect_gpu;
 
 mod panic;
 mod text;
 mod gpu;
 mod mem;
+mod clock;
 
 use crate::text::color::{Color, ColorCode};
-use crate::text::TextWriter;
+use crate::text::{init_writers, DualWriter, TextWriter};
 
 entry_point!(kernel_main);
 
 pub struct KernelState {
-    text_writer: TextWriter,
+    dual_writer: DualWriter,
 }
 
 impl KernelState {
     pub fn new(framebuffer: &'static mut bootloader_api::info::FrameBuffer) -> Self {
+        let dual_writer = init_writers(framebuffer, ColorCode::new(Color::White, Color::Black));
         Self {
-            text_writer: TextWriter::new_framebuffer_writer(
-                framebuffer,
-                ColorCode::new(Color::White, Color::Black)
-            ),
+            dual_writer
         }
     }
 
     pub fn write_fmt(&mut self, args: core::fmt::Arguments) -> core::fmt::Result {
-        self.text_writer.write_fmt(args)
+        self.dual_writer.write_fmt(args)
     }
 }
 
@@ -54,6 +54,10 @@ pub fn init(boot_info: &'static mut BootInfo) {
 pub fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
     init(boot_info);
     println!("Hello, world!");
+
+    let gpu = detect_gpu();
+    println!("GPU: {:?}", gpu);
+    println!("TSC: {}", clock::read_tsc());
 
     loop {}
 }

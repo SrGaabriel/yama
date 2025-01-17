@@ -1,5 +1,3 @@
-
-
 pub mod color;
 mod fonts;
 
@@ -192,4 +190,46 @@ impl fmt::Write for TextWriter {
         self.write_string(s);
         Ok(())
     }
+}
+
+use uart_16550::SerialPort;
+
+pub struct DualWriter {
+    framebuffer: TextWriter,
+    serial: SerialPort,
+}
+
+impl DualWriter {
+    pub fn new(framebuffer: TextWriter, serial: SerialPort) -> Self {
+        DualWriter {
+            framebuffer,
+            serial,
+        }
+    }
+
+    pub fn write_string(&mut self, s: &str) {
+        self.framebuffer.write_string(s);
+        for byte in s.bytes() {
+            self.serial.send(byte);
+        }
+    }
+}
+
+impl fmt::Write for DualWriter {
+    fn write_str(&mut self, s: &str) -> fmt::Result {
+        self.write_string(s);
+        Ok(())
+    }
+}
+
+pub fn init_writers(
+    frame_buffer: &'static mut FrameBuffer,
+    color_code: ColorCode
+) -> DualWriter {
+    let framebuffer = TextWriter::new_framebuffer_writer(frame_buffer, color_code);
+
+    let mut serial = unsafe { SerialPort::new(0x3F8) };
+    serial.init();
+
+    DualWriter::new(framebuffer, serial)
 }
