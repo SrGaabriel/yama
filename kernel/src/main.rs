@@ -59,6 +59,11 @@ pub fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
     println!("GPU: {:?}", gpu);
     println!("TSC: {}", clock::read_tsc());
 
+    let is_vm = gpu.is_some_and(|gpu| gpu.known_vendor() == Some(gpu::scan::KnownVendor::Virtual));
+    if is_vm {
+        println!("Running in a virtual machine");
+    }
+
     loop {}
 }
 

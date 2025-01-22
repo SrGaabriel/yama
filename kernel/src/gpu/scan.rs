@@ -1,12 +1,12 @@
 use core::arch::asm;
 use crate::gpu::PciDevice;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum KnownVendor {
     Nvidia = 0x10DE,
     Amd = 0x1002,
     Intel = 0x8086,
-    Dummy = 0x1234
+    Virtual = 0x1234
 }
 
 const PCI_CONFIG_ADDRESS: u16 = 0xCF8;

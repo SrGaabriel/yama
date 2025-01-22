@@ -27,7 +27,7 @@ impl PciDevice {
             0x10DE => Some(KnownVendor::Nvidia),
             0x1002 => Some(KnownVendor::Amd),
             0x8086 => Some(KnownVendor::Intel),
-            0x1234 => Some(KnownVendor::Dummy),
+            0x1234 => Some(KnownVendor::Virtual),
             _ => None
         }
     }
