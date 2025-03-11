@@ -1,3 +1,3 @@
 pub mod alloc;
 
-pub type Vec<T> = crate::alloc::vec::Vec<T>;
+pub type Vec<T> = alloc::vec::Vec<T>;
