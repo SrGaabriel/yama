@@ -1,5 +1,5 @@
 fn main() {
-    let uefi = false;
+    let uefi = true;
     let mut cmd = std::process::Command::new("C:/Program Files/qemu/qemu-system-x86_64");
     cmd.arg("-machine").arg("accel=whpx,type=q35");
     if uefi {
